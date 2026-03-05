@@ -1,20 +1,32 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>Plant Disease Detection</title>
+
+<title>PlantCare AI</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 </head>
 
 <body>
 
-<h2>Upload Plant Leaf Image</h2>
+<h2>Plant Disease Detection</h2>
 
 <form method="POST" enctype="multipart/form-data">
-<input type="file" name="file">
-<button type="submit">Predict</button>
+
+<input type="file" name="file" required>
+
+<br><br>
+
+<button type="submit">Predict Disease</button>
+
 </form>
 
-{% if prediction is not none %}
-<h3>Predicted Class: {{ prediction }}</h3>
+{% if prediction %}
+
+<h3>Prediction Class: {{prediction}}</h3>
+
 {% endif %}
 
 </body>
