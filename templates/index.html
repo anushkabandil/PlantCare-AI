@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Plant Disease Detection</title>
+</head>
+
+<body>
+
+<h2>Upload Plant Leaf Image</h2>
+
+<form method="POST" enctype="multipart/form-data">
+<input type="file" name="file">
+<button type="submit">Predict</button>
+</form>
+
+{% if prediction is not none %}
+<h3>Predicted Class: {{ prediction }}</h3>
+{% endif %}
+
+</body>
+</html>
