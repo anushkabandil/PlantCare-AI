@@ -37,6 +37,34 @@ history = model.fit(
     epochs=5
 )
 
+# ----------------------------
+# Activity 3.4: Visualize Training History
+# ----------------------------
+
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(12,4))
+
+# Accuracy
+plt.subplot(1,2,1)
+plt.plot(history.history['accuracy'], label='train_accuracy')
+plt.plot(history.history['val_accuracy'], label='val_accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.title('Accuracy')
+plt.legend()
+
+# Loss
+plt.subplot(1,2,2)
+plt.plot(history.history['loss'], label='train_loss')
+plt.plot(history.history['val_loss'], label='val_loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.title('Loss')
+plt.legend()
+
+plt.show()
+
 # Save model
 model.save("model/plant_disease_model.h5")
 
