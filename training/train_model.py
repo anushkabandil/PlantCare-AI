@@ -1,28 +1,43 @@
-import tensorflow as tf
 
-dataset = tf.keras.preprocessing.image_dataset_from_directory(
-    "dataset",
-    image_size=(224,224),
-    batch_size=32
+import tensorflow as tf
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras import layers, models
+from preprocessing.preprocessor import train_generator, valid_generator
+
+# Load pretrained MobileNetV2
+base_model = MobileNetV2(
+    input_shape=(224,224,3),
+    include_top=False,
+    weights="imagenet"
 )
 
-model = tf.keras.Sequential([
-    tf.keras.layers.Rescaling(1./255),
-    tf.keras.layers.Conv2D(32,3,activation="relu"),
-    tf.keras.layers.MaxPooling2D(),
-    tf.keras.layers.Conv2D(64,3,activation="relu"),
-    tf.keras.layers.MaxPooling2D(),
-    tf.keras.layers.Flatten(),
-    tf.keras.layers.Dense(128,activation="relu"),
-    tf.keras.layers.Dense(3,activation="softmax")
-])
+base_model.trainable = False
+
+# Custom classifier
+x = base_model.output
+x = layers.GlobalAveragePooling2D()(x)
+x = layers.Dense(128, activation="relu")(x)
+x = layers.Dropout(0.5)(x)
+outputs = layers.Dense(train_generator.num_classes, activation="softmax")(x)
+
+model = models.Model(inputs=base_model.input, outputs=outputs)
 
 model.compile(
     optimizer="adam",
-    loss="sparse_categorical_crossentropy",
+    loss="categorical_crossentropy",
     metrics=["accuracy"]
 )
 
-model.fit(dataset, epochs=10)
+model.summary()
 
-model.save("../model/plant_model.h5")
+# Train model
+history = model.fit(
+    train_generator,
+    validation_data=valid_generator,
+    epochs=5
+)
+
+# Save model
+model.save("model/plant_disease_model.h5")
+
+print("Model training complete and saved.")
