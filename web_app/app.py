@@ -1,35 +1,69 @@
+import streamlit as st
 import tensorflow as tf
+from PIL import Image
 import numpy as np
-from flask import Flask, render_template, request
-from tensorflow.keras.preprocessing import image
 
-app = Flask(__name__)
+# Load model
+model = tf.keras.models.load_model("../model/plant_model.h5")
 
-model = tf.keras.models.load_model("../model/plant_disease_model.h5")
+# Class labels
+class_names = [
+    "Tomato Early Blight",
+    "Tomato Late Blight",
+    "Tomato Healthy"
+]
 
-IMG_SIZE = (224,224)
+# Disease descriptions
+disease_info = {
+    "Tomato Early Blight": "A fungal disease causing brown spots on leaves.",
+    "Tomato Late Blight": "A serious disease causing large dark lesions on leaves and fruit.",
+    "Tomato Healthy": "The plant appears healthy with no visible disease symptoms."
+}
 
-def predict(img_path):
-    img = image.load_img(img_path, target_size=IMG_SIZE)
-    img = image.img_to_array(img)
-    img = np.expand_dims(img, axis=0)
-    img = img / 255.0
+treatment_info = {
+    "Tomato Early Blight": "Remove infected leaves and apply fungicide.",
+    "Tomato Late Blight": "Use copper-based fungicide and remove infected plants.",
+    "Tomato Healthy": "No treatment required. Maintain proper watering and sunlight."
+}
+
+# Page config
+st.set_page_config(page_title="Plant Disease Detection", page_icon="🌿", layout="centered")
+
+st.title("🌿 Plant Disease Detection")
+st.write("Upload a plant leaf image to detect possible diseases.")
+
+uploaded_file = st.file_uploader("Upload Image", type=["jpg", "png", "jpeg", "jfif"])
+
+if uploaded_file:
+    image = Image.open(uploaded_file)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.image(image, caption="Uploaded Leaf")
+
+    img = image.resize((224,224))
+    img = np.array(img)/255.0
+    img = img.reshape(1,224,224,3)
 
     prediction = model.predict(img)
-    return prediction.argmax()
 
-@app.route("/", methods=["GET","POST"])
-def index():
-    if request.method == "POST":
-        file = request.files["file"]
-        filepath = "temp.jpg"
-        file.save(filepath)
+    predicted_class = np.argmax(prediction)
+    confidence = np.max(prediction)
 
-        result = predict(filepath)
+    disease = class_names[predicted_class]
 
-        return render_template("index.html", prediction=result)
+    with col2:
+        st.subheader("Prediction Result")
+        st.success(disease)
 
-    return render_template("index.html", prediction=None)
+        st.write("Confidence")
+        st.progress(float(confidence))
 
-if __name__ == "__main__":
-    app.run(debug=True)
+        st.write(f"{confidence*100:.2f}%")
+
+        st.subheader("About the Disease")
+        st.info(disease_info[disease])
+
+        st.subheader("Treatment Advice")
+        st.warning(treatment_info[disease])
