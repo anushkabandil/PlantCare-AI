@@ -1,8 +1,8 @@
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-train_dir = "../dataset/New Plant Diseases Dataset(Augmented)/train"
-valid_dir = "../dataset/New Plant Diseases Dataset(Augmented)/valid"
+train_dir = "dataset/New Plant Diseases Dataset(Augmented)/train"
+valid_dir = "dataset/New Plant Diseases Dataset(Augmented)/valid"
 # Data augmentation for training
 train_datagen = ImageDataGenerator(
     rescale=1./255,
