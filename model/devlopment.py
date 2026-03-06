@@ -3,7 +3,7 @@ from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout
 from tensorflow.keras.models import Model
 
-# Image input size
+
 IMG_SIZE = (224, 224, 3)
 
 
@@ -44,6 +44,7 @@ model.compile(
 
 
 model.summary()
+
 
 
 model.save("plant_disease_model_architecture.h5")
