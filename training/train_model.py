@@ -1,10 +1,24 @@
 
+
+# MobileNetV2 Plant Disease Classification Model
+
+
+# ==============================
+# Imports
+# ==============================
+
 import tensorflow as tf
 from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras import layers, models
+import matplotlib.pyplot as plt
+
 from preprocessing.preprocessor import train_generator, valid_generator
 
-# Load pretrained MobileNetV2
+
+# ==============================
+# Load Pretrained MobileNetV2
+# ==============================
+
 base_model = MobileNetV2(
     input_shape=(224,224,3),
     include_top=False,
@@ -13,14 +27,24 @@ base_model = MobileNetV2(
 
 base_model.trainable = False
 
-# Custom classifier
+
+# ==============================
+# Custom Classifier
+# ==============================
+
 x = base_model.output
 x = layers.GlobalAveragePooling2D()(x)
 x = layers.Dense(128, activation="relu")(x)
 x = layers.Dropout(0.5)(x)
+
 outputs = layers.Dense(train_generator.num_classes, activation="softmax")(x)
 
 model = models.Model(inputs=base_model.input, outputs=outputs)
+
+
+# ==============================
+# Compile Model
+# ==============================
 
 model.compile(
     optimizer="adam",
@@ -30,18 +54,21 @@ model.compile(
 
 model.summary()
 
-# Train model
+
+# ==============================
+# Train Model
+# ==============================
+
 history = model.fit(
     train_generator,
     validation_data=valid_generator,
     epochs=5
 )
 
-# ----------------------------
-# Activity 3.4: Visualize Training History
-# ----------------------------
 
-import matplotlib.pyplot as plt
+# ==============================
+# Visualize Training History
+# ==============================
 
 plt.figure(figsize=(12,4))
 
@@ -65,7 +92,11 @@ plt.legend()
 
 plt.show()
 
-# Save model
+
+# ==============================
+# Save Model
+# ==============================
+
 model.save("model/plant_disease_model.h5")
 
 print("Model training complete and saved.")
