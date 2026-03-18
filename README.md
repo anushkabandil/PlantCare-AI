@@ -112,5 +112,4 @@ PlantCare AI is built with the vision of combining **Artificial Intelligence + A
 
 If you find this project useful, consider giving it a ⭐ on GitHub!
 
-<p align="center">
-  🚀 Built with passion for innovation
+
